@@ -12,7 +12,30 @@
 #     >>> razdalja("morje", "poletje")
 #     4
 # =============================================================================
+def memo(f):
+    '''Pomožna funkicja, ki si zapomni rezultate vmesnih klicev.'''
+    slovar = dict()
+    def pomozna(niz1, niz2):
+        if (niz1, niz2) not in slovar:
+            slovar[(niz1, niz2)] = f(niz1, niz2)
+        return slovar[(niz1, niz2)]
+    return pomozna
 
+@memo
+def razdalja(niz1, niz2):
+    '''Izračuna Levenshteinovo razdaljo med nizoma.'''
+    if len(niz1) == 0 or len(niz2) == 0:
+        return len(niz1) + len(niz2)
+    elif niz1[0] == niz2[0]:
+        return razdalja(niz1[1:], niz2[1:])
+    else:
+        # V prvem ali drugem nizu spremenimo črko
+        spremeni = razdalja(niz1[1:], niz2[1:]) + 1
+        # Vstavimo v prvi niz
+        vstavi1 = razdalja(niz1, niz2[1:]) + 1
+        # Vstavimo v drugi niz
+        vstavi2 = razdalja(niz1[1:], niz2) + 1
+        return min(spremeni, vstavi1, vstavi2)
 # =====================================================================@010511=
 # 2. podnaloga
 # Sestavite funkcijo `spremembe(niz1, niz2)`, ki vrne seznam sprememb
@@ -28,7 +51,41 @@
 #     >>> spremembe("morje", "poletje")
 #     [('p/m', 1), ('l/r', 3), ('+e', 4), ('+t', 5)]
 # =============================================================================
+##def memo(f):
+##    '''Pomožna funkicja, ki si zapomni rezultate vmesnih klicev.'''
+##    slovar = dict()
+##    def pomozna(niz1, niz2, indeks):
+##        if (niz1, niz2, indeks) not in slovar:
+##            slovar[(niz1, niz2, indeks)] = f(niz1, niz2, indeks)
+##        return slovar[(niz1, niz2, indeks)]
+##    return pomozna
 
+##@memo
+def spremembe(niz1, niz2, indeks=1):
+    '''Vrne opis spremembe in mesto v prvem nizu, kjer se sprememba zgodi.'''
+    sezSprememb = []
+    if len(niz1) == 0:
+        for znak in niz2:
+            sezSprememb.append(('+{}'.format(znak), indeks))
+            indeks += 1
+        return sezSprememb
+    elif len(niz2) == 0:
+        for znak in niz1:
+            sezSprememb.append(('-{}'.format(znak), indeks))
+            indeks += 1
+        return sezSprememb
+    if niz1[0] == niz2[0]:
+        return spremembe(niz1[1:], niz2[1:], indeks+1)
+    else:
+        # V prvem ali drugem nizu spremenimo črko. Recimo, da v prvem
+        spremeni = [('{}/{}'.format(niz2[0], niz1[0]), indeks)] + spremembe(niz1[1:], niz2[1:], indeks+1)
+        # Vstavimo v prvi niz
+        vstavi1 = [('+{}'.format(niz2[0]), indeks)] + spremembe(niz1, niz2[1:], indeks+1)
+        # Zbrišemo iz prvega niza
+        vstavi2 = [('-{}'.format(niz1[0]), indeks)] + spremembe(niz1[1:], niz2, indeks)
+
+        sezSprememb.extend(min(spremeni, vstavi1, vstavi2, key=len))
+        return sezSprememb
 
 
 

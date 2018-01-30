@@ -172,13 +172,15 @@ def resitve01(predmeti, velikost):
             # nismo vzeli predmeta i
             for resitev_podproblema in resitve01(predmeti[:i], vrednost[0]):
                 for resitev in resitveBrez:
-                    resitev.prepend(resitev_podproblema + [0])
+                    resitev = [resitev_podproblema + [0]] + resitev
+                    # resitev.prepend(resitev_podproblema + [0])
         else:
             # smo vzeli predmet i
             vrednost = (vrednost[0] - predmeti[i][0], vrednost[1] - predmeti[i][1])
             for resitev_podproblema in resitve01(predmeti[:i], vrednost[0]):
                 for resitev in resitveZ:
-                    resitev.prepend(resitev_podproblema + [1])
+                    resitev = [resitev_podproblema + [1]] + resitev
+                    # resitev.prepend(resitev_podproblema + [1])
         i -= 1
     return resitveZ + resitveBrez
 
@@ -197,6 +199,24 @@ def resitve01(predmeti, velikost):
 #     >>> resitev0n([(2,3,2),(4,5,3),(4,7,1),(6,8,2)], 15)
 #     [2, 0, 1, 1]
 # =============================================================================
+def resitev0n(predmeti, velikost):
+    '''Imamo nahrbtnik s podanimi količinami predmetov.'''
+    # Pretvorimo na problem navadnega nahrbtnika tako,
+    # da iz (velikost, cena, n) naredimo n predmetov (velikost, cena)
+    posamezniPredmeti = []
+    sezKolicin = [] # Rabimo za rekonstrukcijo
+    for (velikostPredmeta, cena, količina) in predmeti:
+        sezKolicin.append(količina)
+        for _ in range(količina):
+            posamezniPredmeti.append((velikostPredmeta, cena))
+    resitev = resitev01(posamezniPredmeti, velikost)
+    pravaResitev = []
+    zacetniIndeks = 0
+    for koncniIndeks in sezKolicin:
+        pravaResitev.append(sum(resitev[zacetniIndeks : koncniIndeks]))
+        zacetniIndeks = koncniIndeks
+    return pravaResitev
+
 
 
 

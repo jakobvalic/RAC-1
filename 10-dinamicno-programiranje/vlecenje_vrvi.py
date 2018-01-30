@@ -22,6 +22,22 @@
 # _Komentar_: Najbolj pravično razdelitev dosežemo, če damo udeleženca
 # z masama 102 in 95 skupaj, vsi ostali pa tvorijo drugo skupino.
 # =============================================================================
+def moznosti(mase):
+    '''Rekurzivno pregleda vse možnosti za razporejanje v dve skupini.'''
+    razporeditveSprvim = []
+    if len(mase) == 0:
+        return [(0, 0)]
+    razporeditve = moznosti(mase[1:])
+    for (skupina1, skupina2) in razporeditve:
+        razporeditveSprvim.append((skupina1 + mase[0], skupina2)) # Prvega damo v prvo skupino
+        razporeditveSprvim.append((skupina1, skupina2 + mase[0])) # Prvega damo v drugo skupino
+    return razporeditveSprvim
+
+def razdeli(mase):
+    '''Vrne maso manjše od skupin.'''
+    razporeditve = moznosti(mase)
+    urejeneRazlike = sorted(razporeditve, key=lambda par:abs(par[1] - par[0]))
+    return min(urejeneRazlike[0])
 
 # =====================================================================@010513=
 # 2. podnaloga
@@ -43,6 +59,8 @@
 # 
 # Funkcijo preizkusite na seznamu dolžine 50 in na seznamu dolžine 100.
 # =============================================================================
+def razdeli_dinamicno(mase):
+    '''Razdeli mase z dinamičnim programiranjem, 0-1 nahrbtnikom.'''
 
 # =====================================================================@010514=
 # 3. podnaloga
